@@ -1,3 +1,9 @@
+#|
+Proyecto final de FLP entregado por los siguientes estudiantes:
+Juan David Camacho 2266292
+Wilson Andres Martinez 2266319
+Juan Gabriel Paredes 2266183
+||#
 #lang eopl
 (require racket/system)
 (require racket/base)
@@ -86,15 +92,9 @@
 
 ;; Funciones nuevas añadidas
 (define show-the-datatypes
-  (lambda () 
-    (sllgen:list-define-datatypes 
-      scanner-spec-simple-interpreter 
-      grammar-simple-interpreter)))
+  (lambda () (sllgen:list-define-datatypes scanner-spec-simple-interpreter grammar-simple-interpreter)))
 
-(define just-scan
-  (sllgen:make-string-scanner 
-    scanner-spec-simple-interpreter 
-    grammar-simple-interpreter))
+(define just-scan (sllgen:make-string-scanner scanner-spec-simple-interpreter grammar-simple-interpreter))
 
 ;; Crea tipo de datos
 (sllgen:make-define-datatypes scanner-spec-simple-interpreter grammar-simple-interpreter)
