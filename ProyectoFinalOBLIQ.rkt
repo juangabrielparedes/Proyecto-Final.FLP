@@ -5,8 +5,6 @@ Wilson Andres Martinez 2266319
 Juan Gabriel Paredes 2266183
 ||#
 #lang eopl
-(require racket/system)
-(require racket/base)
 #|
 <programa>                       ::= <expresion>
 <expresion>                      ::= <bool-expresion>
@@ -47,11 +45,11 @@ Juan Gabriel Paredes 2266183
 
 ;; Especificación léxica corregida
 (define scanner-spec-simple-interpreter
-  '((whitespace (whitespace) skip)
-    (comment ("(*" (arbno (not "*)"))) skip)
+  '((white-sp (whitespace) skip)
+    (comment ( "%" (arbno (not ))) skip)
     (number (digit (arbno digit)) number)
     (identifier (letter (arbno (or letter digit "_" "-" "?"))) symbol)
-    (character ("#\\" any) character)
+    (char ("'" (or letter digit) "'") symbol) 
     (string ("\"" (arbno (not "\"")) "\"") string)))
 
 ;; Especificación de la gramática
@@ -60,7 +58,7 @@ Juan Gabriel Paredes 2266183
     
     (expression (identifier) var-exp)
     (expression (number) lit-exp)
-    (expression (character) char-exp)
+    (expression (char) char-exp)
     (expression (string) string-exp)
     (expression ("true") bool-true-exp)
     (expression ("false") bool-false-exp)
@@ -99,18 +97,19 @@ Juan Gabriel Paredes 2266183
 ;; Crea tipo de datos
 (sllgen:make-define-datatypes scanner-spec-simple-interpreter grammar-simple-interpreter)
 
-;; El FrontEnd (Análisis léxico y sintáctico integrados)
+;; Análisis léxico y sintáctico integrados
 (define scan&parse
   (sllgen:make-string-parser scanner-spec-simple-interpreter grammar-simple-interpreter))
+
 
 ;; Definición del entorno
 (define empty-env '())
 
 (define (extend-env ids vals env)
-  (append (map cons ids vals) env))
-
-(define (my-error msg)
-  (error msg))
+  (if (null? ids)
+      env
+      (cons (cons (car ids) (car vals))
+            (extend-env (cdr ids) (cdr vals) env))))
 
 (define (apply-env env id)
   (cond
@@ -135,7 +134,7 @@ Juan Gabriel Paredes 2266183
   (lambda ()
     empty-env))
 
-;; Funciones para aplicar primitivas
+;;  aplicar primitivas
 (define apply-primitive
   (lambda (prim args)
     (cases primitive prim
